@@ -189,6 +189,11 @@ the same build works at any prefix.
 This repository publishes to <https://player.kiarashs.ir>, named in `public/CNAME`.
 Change that file to point the build somewhere else, or delete it for a project site.
 
+The published library is not always identical to a local one. CI installs ffmpeg,
+so every Ogg source is re-encoded to MP3 and every track gets a sampled waveform;
+build locally without ffmpeg and the same manifest yields Ogg files and plain seek
+bars. Both play, but only the CI output plays in Safari.
+
 ## Layout
 
 ```
