@@ -1,7 +1,7 @@
 {
   "site": {
-    "title": "Kiarash Play",
-    "tagline": "Sound, poured into glass."
+    "title": "Kiarash's Player",
+    "tagline": "An online platform to listen music."
   },
   "options": {
     "concurrency": 4,
