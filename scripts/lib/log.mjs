@@ -14,17 +14,35 @@ export const color = {
 };
 
 let warnings = 0;
+/** When set, lines go here instead of the console so a caller can return them. */
+let sink = null;
+
+/** Start collecting log lines; the returned function stops and hands them back. */
+export function captureLog() {
+  const previous = sink;
+  const lines = [];
+  sink = lines;
+  return () => {
+    sink = previous;
+    return lines;
+  };
+}
+
+const emit = (stream, prefix, msg) => {
+  if (sink) sink.push(`${prefix}${msg}`);
+  else stream(msg);
+};
 
 export const log = {
-  step: (msg) => console.log(`${color.magenta('>')} ${color.bold(msg)}`),
-  info: (msg) => console.log(`  ${msg}`),
-  detail: (msg) => console.log(`  ${color.dim(msg)}`),
-  ok: (msg) => console.log(`  ${color.green('ok')} ${msg}`),
-  skip: (msg) => console.log(`  ${color.dim('--')} ${color.dim(msg)}`),
+  step: (msg) => emit((m) => console.log(`${color.magenta('>')} ${color.bold(m)}`), '', msg),
+  info: (msg) => emit((m) => console.log(`  ${m}`), '', msg),
+  detail: (msg) => emit((m) => console.log(`  ${color.dim(m)}`), '', msg),
+  ok: (msg) => emit((m) => console.log(`  ${color.green('ok')} ${m}`), 'ok ', msg),
+  skip: (msg) => emit((m) => console.log(`  ${color.dim('--')} ${color.dim(m)}`), '', msg),
   warn: (msg) => {
     warnings += 1;
-    console.warn(`  ${color.yellow('warn')} ${msg}`);
+    emit((m) => console.warn(`  ${color.yellow('warn')} ${m}`), 'warn ', msg);
   },
-  fail: (msg) => console.error(`  ${color.red('fail')} ${msg}`),
+  fail: (msg) => emit((m) => console.error(`  ${color.red('fail')} ${m}`), 'failed ', msg),
   warningCount: () => warnings,
 };

@@ -10,7 +10,11 @@ export interface Track {
   /** Path relative to the site base, e.g. "media/audio/abc.mp3". */
   src: string;
   title: string;
+  /** The credit line shown under the title. */
   artist: string;
+  /** The people who get their own page; the first one owns the file's folder. */
+  artists: string[];
+  artistIds: string[];
   album?: string;
   year?: number;
   genre?: string;
@@ -41,17 +45,30 @@ export interface Playlist {
   duration: number;
 }
 
+export interface Artist {
+  id: string;
+  name: string;
+  hue: number;
+  /** Set only for artists credited first on a track, who own the folder on disk. */
+  folder?: string;
+  trackIds: string[];
+  albums: string[];
+  duration: number;
+  art?: string;
+}
+
 export interface Library {
   generatedAt: string;
   site: { title: string; tagline: string };
   playlists: Playlist[];
+  artists: Artist[];
   tracks: Track[];
 }
 
 export type RepeatMode = 'off' | 'all' | 'one';
 
 export interface QueueOrigin {
-  kind: 'playlist' | 'liked' | 'recent' | 'search' | 'all' | 'queue';
+  kind: 'playlist' | 'artist' | 'liked' | 'recent' | 'search' | 'all' | 'queue';
   id?: string;
   title: string;
 }

@@ -1,10 +1,20 @@
 import type { Library } from '../types';
 import { useCollections } from '../state/collections';
 import { useUi, type Theme } from '../state/ui';
-import { formatLength } from '../lib/library';
+import { formatLength, plural } from '../lib/library';
 import { href, type Route } from '../lib/router';
 import { Cover, MosaicCover } from './Cover';
-import { ClockIcon, HeartIcon, HomeIcon, KeyboardIcon, MoonIcon, SunIcon, WaveIcon } from './Icons';
+import {
+  ArtistIcon,
+  ClockIcon,
+  HeartIcon,
+  HomeIcon,
+  KeyboardIcon,
+  MoonIcon,
+  SunIcon,
+  UploadIcon,
+  WaveIcon,
+} from './Icons';
 
 interface Props {
   library: Library;
@@ -12,11 +22,12 @@ interface Props {
   open: boolean;
   onNavigate: (route: Route) => void;
   onShortcuts: () => void;
+  onAddMusic: () => void;
 }
 
 const THEME_ORDER: Theme[] = ['auto', 'light', 'dark'];
 
-export function Sidebar({ library, route, open, onNavigate, onShortcuts }: Props) {
+export function Sidebar({ library, route, open, onNavigate, onShortcuts, onAddMusic }: Props) {
   const { liked, recent } = useCollections();
   const { theme, setTheme } = useUi();
 
@@ -59,10 +70,16 @@ export function Sidebar({ library, route, open, onNavigate, onShortcuts }: Props
         {item({ view: 'home' }, 'Home', <HomeIcon size={17} />)}
         {item({ view: 'liked' }, 'Liked', <HeartIcon size={17} />, liked.length)}
         {item({ view: 'recent' }, 'Recently played', <ClockIcon size={17} />, recent.length)}
+        {item({ view: 'artists' }, 'Artists', <ArtistIcon size={17} />, library.artists.length)}
         {item({ view: 'all' }, 'All tracks', <WaveIcon size={17} />, library.tracks.length)}
       </div>
 
-      <div className="sidebar__label">Playlists</div>
+      <div className="sidebar__label">
+        Playlists
+        <button type="button" className="btn btn--sm btn--icon sidebar__add" aria-label="Add music" onClick={onAddMusic}>
+          <UploadIcon size={15} />
+        </button>
+      </div>
       <div className="sidebar__scroll">
         {library.playlists.map((playlist) => {
           const tracks = playlist.trackIds
@@ -89,7 +106,7 @@ export function Sidebar({ library, route, open, onNavigate, onShortcuts }: Props
               <div className="playlist-link__text">
                 <div className="playlist-link__title">{playlist.title}</div>
                 <div className="playlist-link__meta">
-                  {playlist.trackIds.length} tracks · {formatLength(playlist.duration)}
+                  {plural(playlist.trackIds.length, 'track')} · {formatLength(playlist.duration)}
                 </div>
               </div>
             </a>

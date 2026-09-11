@@ -5,6 +5,7 @@ import { useCollections } from '../state/collections';
 import { useUi } from '../state/ui';
 import { formatTime } from '../lib/library';
 import { Cover } from './Cover';
+import { ArtistLinks } from './ArtistLinks';
 import { Popover } from './Popover';
 import { HeartIcon, MoreIcon, PauseIcon, PlayIcon, QueueIcon } from './Icons';
 
@@ -72,7 +73,7 @@ export function TrackList({ tracks, origin, showAlbum = true }: Props) {
 
               <div className="track__main">
                 <div className="track__title">{track.title}</div>
-                <div className="track__artist">{track.artist}</div>
+                <ArtistLinks track={track} className="track__artist" />
               </div>
 
               {showAlbum && <div className="track__album">{track.album ?? ''}</div>}

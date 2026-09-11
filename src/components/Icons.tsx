@@ -209,3 +209,17 @@ export const WaveIcon = (p: Props) => (
     <path d="M3 12h2M8 6.5v11M12 3.5v17M16 8v8M20.5 11h.5" />
   </Icon>
 );
+
+export const UploadIcon = (p: Props) => (
+  <Icon {...p}>
+    <path d="M12 16.5V4.5M8 8l4-4 4 4" />
+    <path d="M4.5 15v3.5A1.5 1.5 0 0 0 6 20h12a1.5 1.5 0 0 0 1.5-1.5V15" />
+  </Icon>
+);
+
+export const ArtistIcon = (p: Props) => (
+  <Icon {...p}>
+    <circle cx="12" cy="8" r="3.8" />
+    <path d="M4.8 20.2a7.2 7.2 0 0 1 14.4 0" />
+  </Icon>
+);

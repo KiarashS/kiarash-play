@@ -42,10 +42,19 @@ function normaliseTrack(raw, where) {
   if (!/^https?:\/\//i.test(url)) {
     fail(where, `"${url}" is not an http(s) URL. Local files belong in content/local/.`);
   }
+  // `artist` is the line shown under the title; `artists` is who gets a page.
+  const artists = Array.isArray(track.artists)
+    ? track.artists.map((name) => String(name).trim()).filter(Boolean)
+    : undefined;
+  if (artists && artists.length === 0) {
+    fail(where, '"artists" was given but empty - omit it or list at least one name');
+  }
+
   return {
     url,
     title: track.title?.trim() || undefined,
     artist: track.artist?.trim() || undefined,
+    artists,
     album: track.album?.trim() || undefined,
     year: track.year ?? undefined,
     // Optional overrides fetched alongside the audio.
