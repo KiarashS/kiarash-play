@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Kiarash Play</title>
+    <meta name="description" content="A browser music player with a liquid-glass interface. Tracks are declared by URL and downloaded at build time." />
+    <meta name="theme-color" content="#06060b" />
+    <meta name="color-scheme" content="dark light" />
+
+    <link rel="icon" type="image/svg+xml" href="./icons/app-icon.svg" />
+    <link rel="apple-touch-icon" href="./icons/app-icon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="preload" as="fetch" href="./library.json" crossorigin="anonymous" />
+    <style>
+      /* Paint the page background before the stylesheet loads, so there is no white flash. */
+      html { background: #06060b; }
+      @media (prefers-color-scheme: light) {
+        html:not([data-theme='dark']) { background: #eceaf4; }
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+    <script>
+      // Apply the stored theme before first paint to avoid a flash of the wrong palette.
+      (function () {
+        try {
+          var stored = JSON.parse(localStorage.getItem('kiarash-play:theme') || '"auto"');
+          var dark = stored === 'dark' || (stored === 'auto' && !window.matchMedia('(prefers-color-scheme: light)').matches);
+          document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>This player needs JavaScript to decode and control audio.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

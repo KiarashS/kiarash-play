@@ -1,0 +1,75 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Allow one deployment at a time; a newer push supersedes a queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Needed to re-encode Ogg/FLAC/WAV sources to MP3 and to sample waveforms.
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+
+      - name: Restore downloaded media
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          # Files are keyed by a hash of their URL, so the manifest decides the cache.
+          key: media-${{ runner.os }}-${{ hashFiles('content/playlists.json') }}
+          restore-keys: |
+            media-${{ runner.os }}-
+
+      - run: npm ci
+
+      - name: Fetch tracks listed in content/playlists.json
+        run: npm run fetch -- --strict
+
+      - run: npm run typecheck
+
+      - name: Build
+        run: npx vite build
+        env:
+          # GitHub Pages project sites are served from /<repo>/.
+          BASE_PATH: /${{ github.event.repository.name }}/
+
+      - name: Report output size
+        run: du -sh dist && du -sh dist/media
+
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

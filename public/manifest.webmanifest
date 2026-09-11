@@ -1,0 +1,16 @@
+{
+  "name": "Kiarash Play",
+  "short_name": "Play",
+  "description": "A browser music player with a liquid-glass interface.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#06060b",
+  "theme_color": "#06060b",
+  "categories": ["music", "entertainment"],
+  "icons": [
+    { "src": "icons/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

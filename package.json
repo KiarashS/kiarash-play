@@ -1,0 +1,29 @@
+{
+  "name": "kiarash-play",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A browser music player with a liquid-glass interface. Tracks are declared by URL and downloaded at build time.",
+  "scripts": {
+    "fetch": "node scripts/fetch-media.mjs",
+    "fetch:strict": "node scripts/fetch-media.mjs --strict",
+    "fetch:clean": "node scripts/fetch-media.mjs --clean",
+    "dev": "npm run fetch && vite",
+    "build": "npm run fetch && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "music-metadata": "^11.0.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0"
+  }
+}

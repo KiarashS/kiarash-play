@@ -1,0 +1,494 @@
+/* ---------------------------------------------------------------------------
+   Tokens
+
+   The accent is three HSL components rather than a colour so that every surface
+   can derive its own tint from the artwork of whatever is playing.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --accent-h: 258;
+  --accent-s: 82%;
+  --accent-l: 66%;
+  --accent: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+  --accent-soft: hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.16);
+  --accent-line: hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.42);
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+
+  --glass-blur: 34px;
+  --bar-height: 92px;
+  --sidebar-width: 264px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  color-scheme: dark;
+}
+
+/* Dark is the default; the light palette is a full override of the same names. */
+:root,
+:root[data-theme='dark'] {
+  --bg-0: #06060b;
+  --bg-1: #0b0b14;
+  --text: #f2f1f8;
+  --text-soft: hsl(250 14% 76%);
+  --text-faint: hsl(250 12% 58%);
+
+  --glass-bg: linear-gradient(
+    150deg,
+    hsl(250 22% 16% / 0.62) 0%,
+    hsl(250 22% 13% / 0.52) 45%,
+    hsl(250 24% 10% / 0.48) 100%
+  );
+  --glass-stroke: hsl(250 40% 96% / 0.1);
+  --glass-highlight: hsl(0 0% 100% / 0.26);
+  --glass-shadow: 0 24px 60px -22px hsl(255 60% 3% / 0.9);
+  --hover: hsl(250 40% 96% / 0.07);
+  --pressed: hsl(250 40% 96% / 0.12);
+  --scrim: hsl(255 50% 3% / 0.62);
+  --noise-opacity: 0.05;
+  --aurora-opacity: 0.62;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg-0: #eceaf4;
+  --bg-1: #f7f6fb;
+  --text: #14121d;
+  --text-soft: hsl(252 12% 32%);
+  --text-faint: hsl(252 10% 46%);
+
+  --glass-bg: linear-gradient(
+    150deg,
+    hsl(0 0% 100% / 0.8) 0%,
+    hsl(0 0% 100% / 0.64) 50%,
+    hsl(250 40% 98% / 0.56) 100%
+  );
+  --glass-stroke: hsl(250 30% 30% / 0.09);
+  --glass-highlight: hsl(0 0% 100% / 0.85);
+  --glass-shadow: 0 24px 55px -26px hsl(255 40% 30% / 0.35);
+  --hover: hsl(250 30% 30% / 0.06);
+  --pressed: hsl(250 30% 30% / 0.11);
+  --scrim: hsl(250 30% 95% / 0.6);
+  --noise-opacity: 0.028;
+  --aurora-opacity: 0.3;
+  color-scheme: light;
+}
+
+/* ---------------------------------------------------------------------------
+   Reset
+   --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--text);
+  font-family: 'Inter var', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  transition: background 600ms var(--ease-out);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* Thin, unobtrusive scrollbars that match the glass. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(250 20% 60% / 0.35) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: hsl(250 20% 60% / 0.3);
+  border: 3px solid transparent;
+  border-radius: var(--r-pill);
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(250 20% 70% / 0.5);
+  background-clip: content-box;
+}
+
+/* ---------------------------------------------------------------------------
+   Backdrop: drifting colour fields behind everything, tinted by the artwork.
+   --------------------------------------------------------------------------- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% -10%, hsl(var(--accent-h) 55% 22% / 0.45), transparent 62%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-0) 70%);
+  transition: background 900ms var(--ease-out);
+}
+
+:root[data-theme='light'] .backdrop {
+  background:
+    radial-gradient(120% 90% at 50% -10%, hsl(var(--accent-h) 72% 90% / 0.7), transparent 64%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-0) 75%);
+}
+
+.backdrop__field {
+  position: absolute;
+  inset: -25%;
+  opacity: var(--aurora-opacity);
+  filter: blur(96px) saturate(130%);
+  /* Displacement turns the round blobs into something with a liquid edge. */
+  filter: blur(96px) saturate(130%) url(#liquid-warp);
+  transition: opacity 700ms var(--ease-out);
+}
+
+.backdrop__blob {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 46% 54% 62% 38% / 52% 42% 58% 48%;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+:root[data-theme='light'] .backdrop__blob {
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+.backdrop__blob--1 {
+  top: -12%;
+  left: -8%;
+  background: radial-gradient(circle at 34% 34%, hsl(var(--accent-h) 90% 62%), transparent 66%);
+  animation: drift-a 38s var(--ease-in-out) infinite;
+}
+
+.backdrop__blob--2 {
+  bottom: -22%;
+  right: -10%;
+  background: radial-gradient(circle at 62% 42%, hsl(calc(var(--accent-h) + 58) 88% 58%), transparent 66%);
+  animation: drift-b 47s var(--ease-in-out) infinite;
+}
+
+.backdrop__blob--3 {
+  top: 26%;
+  right: 18%;
+  width: 34vmax;
+  height: 34vmax;
+  background: radial-gradient(circle at 48% 52%, hsl(calc(var(--accent-h) - 52) 86% 60%), transparent 68%);
+  animation: drift-c 56s var(--ease-in-out) infinite;
+}
+
+/* The blobs pulse gently in time with playback, and hold still when paused. */
+.backdrop[data-playing='true'] .backdrop__field {
+  animation: breathe 9s var(--ease-in-out) infinite;
+}
+
+@keyframes drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate3d(14vw, 9vh, 0) scale(1.16) rotate(52deg); }
+  66% { transform: translate3d(-7vw, 16vh, 0) scale(0.92) rotate(-38deg); }
+}
+
+@keyframes drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.04) rotate(0deg); }
+  40% { transform: translate3d(-18vw, -12vh, 0) scale(0.88) rotate(-64deg); }
+  70% { transform: translate3d(8vw, -20vh, 0) scale(1.2) rotate(30deg); }
+}
+
+@keyframes drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); }
+  50% { transform: translate3d(-22vw, 18vh, 0) scale(1.25); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: var(--aurora-opacity); }
+  50% { opacity: calc(var(--aurora-opacity) * 0.68); }
+}
+
+/* Film grain over the whole page keeps the gradients from banding. */
+.backdrop__grain {
+  position: absolute;
+  inset: 0;
+  opacity: var(--noise-opacity);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------------------
+   Glass primitives
+   --------------------------------------------------------------------------- */
+
+.glass {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  border-radius: var(--r-lg);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-highlight),
+    var(--glass-shadow);
+  isolation: isolate;
+}
+
+/* A 1px gradient rim: bright where light would catch, invisible where it would not. */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from 210deg,
+    hsl(0 0% 100% / 0.5),
+    hsl(0 0% 100% / 0.04) 22%,
+    hsl(0 0% 100% / 0.02) 55%,
+    hsl(var(--accent-h) 70% 80% / 0.28) 78%,
+    hsl(0 0% 100% / 0.42)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* A soft specular patch near the top-left, the way a curved pane catches a window. */
+.glass--lit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 80% at 12% -10%, hsl(0 0% 100% / 0.22), transparent 58%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass--flat {
+  box-shadow: inset 0 0 0 1px var(--glass-stroke);
+}
+
+.glass--flat::before {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Controls
+   --------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  color: var(--text-soft);
+  white-space: nowrap;
+  transition:
+    background 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
+}
+
+.btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.btn:active {
+  transform: scale(0.96);
+  background: var(--pressed);
+}
+
+.btn--icon {
+  width: 36px;
+  padding: 0;
+}
+
+.btn--sm {
+  height: 30px;
+  padding: 0 10px;
+}
+
+.btn--sm.btn--icon {
+  width: 30px;
+}
+
+.btn[aria-pressed='true'],
+.btn.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  background: none;
+  color: var(--text-soft);
+}
+
+/* The primary play button: a bead of glass with a moving highlight. */
+.btn--play {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  color: hsl(var(--accent-h) 55% 16%);
+  background: linear-gradient(155deg, hsl(0 0% 100% / 0.96), hsl(var(--accent-h) 42% 87%));
+  box-shadow:
+    inset 0 1px 1px hsl(0 0% 100% / 0.9),
+    inset 0 -2px 6px hsl(var(--accent-h) 50% 40% / 0.35),
+    0 10px 26px -8px hsl(var(--accent-h) 70% 30% / 0.7);
+  overflow: hidden;
+  transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
+}
+
+.btn--play::after {
+  content: '';
+  position: absolute;
+  inset: -40% -120%;
+  background: linear-gradient(100deg, transparent 38%, hsl(0 0% 100% / 0.75) 50%, transparent 62%);
+  transform: translateX(-70%);
+  transition: transform 700ms var(--ease-out);
+}
+
+.btn--play:hover {
+  transform: scale(1.05);
+}
+
+.btn--play:hover::after {
+  transform: translateX(70%);
+}
+
+.btn--play:active {
+  transform: scale(0.97);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  background: var(--hover);
+  color: var(--text-faint);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+
+/* ---------------------------------------------------------------------------
+   Motion and contrast preferences
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .backdrop__field {
+    filter: blur(96px) saturate(130%);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --glass-stroke: hsl(0 0% 100% / 0.4);
+    --text-faint: var(--text-soft);
+  }
+
+  .glass {
+    backdrop-filter: blur(var(--glass-blur)) saturate(120%) brightness(0.6);
+  }
+}
+
+/* Without backdrop-filter the panels would be transparent mush; fall back to solids. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: hsl(250 26% 12% / 0.92);
+  }
+
+  :root[data-theme='light'] .glass {
+    background: hsl(250 30% 99% / 0.94);
+  }
+}
