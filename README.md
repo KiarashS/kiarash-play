@@ -1,4 +1,4 @@
-# Kiarash Play
+# Kiarash Player
 
 A music player that runs entirely in the browser. You list track URLs in one JSON
 file; a build step downloads them, reads their tags, and writes a static site that
