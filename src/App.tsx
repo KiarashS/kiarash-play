@@ -87,7 +87,7 @@ function Shell({ library }: { library: Library }) {
         : undefined);
 
     const fallback = () => {
-      const hue = track?.hue ?? contextHue ?? hueFor(library.playlists[0]?.id ?? 'kiarash-play');
+      const hue = track?.hue ?? contextHue ?? hueFor(library.playlists[0]?.id ?? '');
       applyAccent({ h: hue, s: 76, l: 66 });
     };
 
