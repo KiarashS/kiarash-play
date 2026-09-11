@@ -12,6 +12,24 @@ playlist they came from.
 
 ## Adding music
 
+Two ways in, both doing the same work. **Add music** in the player opens a form
+that takes a URL, optional metadata, and the playlists the track belongs to; it
+writes the manifest and runs the pipeline while you watch. It needs the local
+server (`npm run dev` or `npm run preview`) because it writes into the repository
+— on a published site the form fills in a manifest snippet for you to paste
+instead. From a terminal:
+
+```
+npm run add -- https://example.com/song.mp3 \
+  --title "Song" --artists "A Composer, A Performer" \
+  --playlist "Late Night Piano" --playlist "Something New"
+```
+
+A `--playlist` that matches no existing playlist creates one with that title, and
+one track can sit in as many playlists as you like — the file is stored once.
+Either route is atomic: if the URL cannot be fetched, the manifest is put back
+the way it was rather than left holding an entry that will never resolve.
+
 Everything lives in `content/playlists.json`. A track is either a bare URL string
 or an object that overrides what the file's tags say:
 
@@ -30,7 +48,8 @@ or an object that overrides what the file's tags say:
         {
           "url": "https://example.com/music/second.flac",
           "title": "Gymnopedie No. 1",
-          "artist": "Erik Satie",
+          "artist": "Erik Satie, performed by Kevin MacLeod",
+          "artists": ["Erik Satie", "Kevin MacLeod"],
           "album": "Trois Gymnopedies",
           "cover": "https://example.com/art/cover.jpg",
           "lyrics": "https://example.com/lyrics/second.lrc"
@@ -44,9 +63,16 @@ or an object that overrides what the file's tags say:
 Then run `npm run fetch`. Per track the script downloads the file, caches it under
 `.cache/` keyed by a hash of the URL, reads its ID3/Vorbis tags with
 `music-metadata`, writes any embedded cover art out as an image, optionally
-re-encodes and waveform-samples it with ffmpeg, and copies the result into
-`public/media/`. It finishes by writing `public/library.json`, which is the only
-thing the app reads at runtime.
+re-encodes and waveform-samples it with ffmpeg, and files the result under the
+first artist credited on it:
+
+```
+public/songs/artists/erik-satie/gymnopedie-no-1.mp3
+public/songs/artists/erik-satie/gymnopedie-no-1.jpg   (cover, when there is one)
+```
+
+It finishes by writing `public/library.json`, which is the only thing the app
+reads at runtime.
 
 Re-running is cheap: a URL already in `.cache/` is never fetched again. Change a
 URL and only that track is downloaded. Remove a track and its published files are
@@ -69,6 +95,21 @@ pruned. Pass `--refresh` to force re-downloads, `--clean` to start over, and
 `cover` points at an image to use instead of embedded art. `lyrics` points at an
 `.lrc` file; timestamped lines are parsed at build time and shown in sync with
 playback, and clicking a line seeks to it.
+
+`artist` is the credit line printed under the title. `artists` is the list of
+people who each get a page, and the first of them owns the folder the file sits
+in. Without `artists`, the credit is split only on unambiguous separators (`;`,
+`&`, `feat.`), never on a comma — "J. S. Bach, John Michel (cello)" is one line
+about two different roles, and guessing wrong scatters a catalogue across bogus
+artist pages. List the names when the split matters:
+
+```json
+{
+  "url": "…",
+  "artist": "Antonio Vivaldi, John Harrison (violin)",
+  "artists": ["Antonio Vivaldi", "John Harrison"]
+}
+```
 
 ### Options
 
@@ -102,7 +143,11 @@ remembers where you left it. Liked tracks, recently played, play counts, the que
 and your playback position are kept in `localStorage`, so reopening the tab picks
 up where you stopped.
 
-Beyond that: search over titles, artists, albums and playlist names (`/` or `⌘K`),
+A page per artist collects everything they are credited on, whether or not they
+are the one whose folder holds the file, along with the playlists those tracks
+appear on. Every credit line in the app links to it.
+
+Beyond that: search over tracks, artists, albums and playlist names (`/` or `⌘K`),
 synced lyrics when a track has an `.lrc`, a live spectrum drawn behind the player
 bar from a Web Audio analyser, a full-screen view, light and dark themes plus
 `auto`, and OS media-key support through the Media Session API, which also puts
@@ -139,8 +184,11 @@ the same build works at any prefix.
 
 ```
 content/playlists.json   the manifest you edit
-scripts/fetch-media.mjs  download, tag, transcode, publish
-scripts/lib/             config parsing, downloader, ffmpeg wrappers
+scripts/fetch-media.mjs  the command line over the pipeline
+scripts/add-track.mjs    `npm run add`
+scripts/studio-plugin.mjs  the uploader's API, mounted on the dev/preview server
+scripts/lib/pipeline.mjs   download, tag, transcode, publish
+scripts/lib/             config parsing, downloader, ffmpeg wrappers, manifest edits
 src/player/              audio engine, queue reducer, keyboard shortcuts
 src/components/          UI
 src/styles/glass.css     tokens, glass primitives, animated backdrop
@@ -148,7 +196,12 @@ src/styles/app.css       layout and components
 public/sw.js             offline caching
 ```
 
-`public/media/` and `public/library.json` are generated and git-ignored.
+`public/songs/` and `public/library.json` are generated and git-ignored.
+
+The uploader's API is mounted by a Vite plugin that only applies when Vite is
+serving, and it answers loopback requests only — it writes to the repository and
+fetches URLs on your behalf, so it has no business being reachable from the
+network. `vite build` produces static files with no API at all.
 
 ## The tracks in this repository
 

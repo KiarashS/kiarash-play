@@ -22,30 +22,48 @@
           "url": "https://upload.wikimedia.org/wikipedia/commons/6/68/Kevin_MacLeod_-_Erik_Satie_Gymnopedie_No_1.ogg",
           "title": "Gymnopedie No. 1",
           "artist": "Erik Satie, performed by Kevin MacLeod",
+          "artists": [
+            "Erik Satie",
+            "Kevin MacLeod"
+          ],
           "album": "Trois Gymnopedies"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Kevin_MacLeod_-_Erik_Satie_Gymnopedie_No_2.ogg",
           "title": "Gymnopedie No. 2",
           "artist": "Erik Satie, performed by Kevin MacLeod",
+          "artists": [
+            "Erik Satie",
+            "Kevin MacLeod"
+          ],
           "album": "Trois Gymnopedies"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Kevin_MacLeod_-_Erik_Satie_Gymnopedie_No_3.ogg",
           "title": "Gymnopedie No. 3",
           "artist": "Erik Satie, performed by Kevin MacLeod",
+          "artists": [
+            "Erik Satie",
+            "Kevin MacLeod"
+          ],
           "album": "Trois Gymnopedies"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Beethoven_Moonlight_2nd_movement.ogg",
           "title": "Moonlight Sonata, II. Allegretto",
           "artist": "Ludwig van Beethoven",
+          "artists": [
+            "Ludwig van Beethoven"
+          ],
           "album": "Piano Sonata No. 14, Op. 27 No. 2"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/d/df/Ludwig_van_Beethoven_-_sonata_no._31_in_a_flat_major%2C_op._110_-_ii._allegro_molto.ogg",
           "title": "Sonata No. 31, II. Allegro molto",
           "artist": "Ludwig van Beethoven",
+          "artists": [
+            "Ludwig van Beethoven"
+          ],
           "album": "Piano Sonata No. 31 in A-flat major, Op. 110"
         }
       ]
@@ -60,36 +78,60 @@
           "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Vivaldi_-_Four_Seasons_1_Spring_mvt_2_Largo_-_John_Harrison_violin.oga",
           "title": "Spring, II. Largo",
           "artist": "Antonio Vivaldi, John Harrison (violin)",
+          "artists": [
+            "Antonio Vivaldi",
+            "John Harrison"
+          ],
           "album": "The Four Seasons"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Vivaldi_-_Four_Seasons_2_Summer_mvt_2_Adagio_-_John_Harrison_violin.oga",
           "title": "Summer, II. Adagio",
           "artist": "Antonio Vivaldi, John Harrison (violin)",
+          "artists": [
+            "Antonio Vivaldi",
+            "John Harrison"
+          ],
           "album": "The Four Seasons"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Vivaldi_-_Four_Seasons_2_Summer_mvt_3_Presto_-_John_Harrison_violin.oga",
           "title": "Summer, III. Presto",
           "artist": "Antonio Vivaldi, John Harrison (violin)",
+          "artists": [
+            "Antonio Vivaldi",
+            "John Harrison"
+          ],
           "album": "The Four Seasons"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Vivaldi_-_Four_Seasons_3_Autumn_mvt_2_Adagio_molto_-_John_Harrison_violin.oga",
           "title": "Autumn, II. Adagio molto",
           "artist": "Antonio Vivaldi, John Harrison (violin)",
+          "artists": [
+            "Antonio Vivaldi",
+            "John Harrison"
+          ],
           "album": "The Four Seasons"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/11_-_Vivaldi_Winter_mvt_2_Largo_-_John_Harrison_violin.ogg",
           "title": "Winter, II. Largo",
           "artist": "Antonio Vivaldi, John Harrison (violin)",
+          "artists": [
+            "Antonio Vivaldi",
+            "John Harrison"
+          ],
           "album": "The Four Seasons"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/2/21/12_-_Vivaldi_Winter_mvt_3_Allegro_-_John_Harrison_violin.ogg",
           "title": "Winter, III. Allegro",
           "artist": "Antonio Vivaldi, John Harrison (violin)",
+          "artists": [
+            "Antonio Vivaldi",
+            "John Harrison"
+          ],
           "album": "The Four Seasons"
         }
       ]
@@ -104,42 +146,70 @@
           "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/JOHN_MICHEL_CELLO-J_S_BACH_CELLO_SUITE_1_in_G_Prelude.ogg",
           "title": "Cello Suite No. 1 in G, I. Prelude",
           "artist": "J. S. Bach, John Michel (cello)",
+          "artists": [
+            "Johann Sebastian Bach",
+            "John Michel"
+          ],
           "album": "Cello Suite No. 1, BWV 1007"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/JOHN_MICHEL_CELLO-J_S_BACH_CELLO_SUITE_1_in_G_Courante.ogg",
           "title": "Cello Suite No. 1 in G, IV. Courante",
           "artist": "J. S. Bach, John Michel (cello)",
+          "artists": [
+            "Johann Sebastian Bach",
+            "John Michel"
+          ],
           "album": "Cello Suite No. 1, BWV 1007"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/3/30/JOHN_MICHEL_CELLO-J_S_BACH_CELLO_SUITE_1_in_G_Sarabande.ogg",
           "title": "Cello Suite No. 1 in G, V. Sarabande",
           "artist": "J. S. Bach, John Michel (cello)",
+          "artists": [
+            "Johann Sebastian Bach",
+            "John Michel"
+          ],
           "album": "Cello Suite No. 1, BWV 1007"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/JOHN_MICHEL_CELLO-J_S_BACH_CELLO_SUITE_1_in_G_Gigue.ogg",
           "title": "Cello Suite No. 1 in G, VII. Gigue",
           "artist": "J. S. Bach, John Michel (cello)",
+          "artists": [
+            "Johann Sebastian Bach",
+            "John Michel"
+          ],
           "album": "Cello Suite No. 1, BWV 1007"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/JOHN_MICHEL_CELLO-J_S_BACH_CELLO_SUITE_3_in_C_Courante.ogg",
           "title": "Cello Suite No. 3 in C, IV. Courante",
           "artist": "J. S. Bach, John Michel (cello)",
+          "artists": [
+            "Johann Sebastian Bach",
+            "John Michel"
+          ],
           "album": "Cello Suite No. 3, BWV 1009"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/c/c0/JOHN_MICHEL_CELLO-J_S_BACH_CELLO_SUITE_3_in_C_Sarabande.ogg",
           "title": "Cello Suite No. 3 in C, V. Sarabande",
           "artist": "J. S. Bach, John Michel (cello)",
+          "artists": [
+            "Johann Sebastian Bach",
+            "John Michel"
+          ],
           "album": "Cello Suite No. 3, BWV 1009"
         },
         {
           "url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/JOHN_MICHEL_CELLO-J_S_BACH_CELLO_SUITE_3_in_C_Gigue.ogg",
           "title": "Cello Suite No. 3 in C, VII. Gigue",
           "artist": "J. S. Bach, John Michel (cello)",
+          "artists": [
+            "Johann Sebastian Bach",
+            "John Michel"
+          ],
           "album": "Cello Suite No. 3, BWV 1009"
         }
       ]

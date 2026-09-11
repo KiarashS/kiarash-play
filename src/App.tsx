@@ -15,12 +15,20 @@ import { Stage } from './components/Stage';
 import { SearchOverlay } from './components/SearchOverlay';
 import { ShortcutsOverlay } from './components/ShortcutsOverlay';
 import { CollectionView, HomeView, PlaylistView } from './components/Views';
-import { MenuIcon, SearchIcon } from './components/Icons';
+import { ArtistsView, ArtistView } from './components/ArtistViews';
+import { AddMusic, probeStudio } from './components/AddMusic';
+import { MenuIcon, SearchIcon, UploadIcon } from './components/Icons';
 
 export function App() {
   const [library, setLibrary] = useState<Library | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { markPlayed } = useCollections();
+
+  const reload = useCallback(() => {
+    loadLibrary()
+      .then(setLibrary)
+      .catch((reason: Error) => setError(reason.message));
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -59,12 +67,12 @@ export function App() {
 
   return (
     <PlayerProvider tracks={tracks} onPlayed={markPlayed}>
-      <Shell library={library} />
+      <Shell library={library} onLibraryChanged={reload} />
     </PlayerProvider>
   );
 }
 
-function Shell({ library }: { library: Library }) {
+function Shell({ library, onLibraryChanged }: { library: Library; onLibraryChanged: () => void }) {
   const player = usePlayer();
   const { toast } = useUi();
   const [route, navigate] = useRoute();
@@ -73,8 +81,15 @@ function Shell({ library }: { library: Library }) {
   const [stage, setStage] = useState(false);
   const [search, setSearch] = useState(false);
   const [shortcuts, setShortcuts] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [studio, setStudio] = useState<Awaited<ReturnType<typeof probeStudio>>>(null);
 
   const track = player.current;
+
+  // The uploader's API only exists on the local dev/preview server.
+  useEffect(() => {
+    probeStudio().then(setStudio);
+  }, [library.generatedAt]);
 
   // Tint the whole interface: the artwork of whatever is playing, else the colour
   // of the playlist it came from, else the one you are looking at.
@@ -82,9 +97,12 @@ function Shell({ library }: { library: Library }) {
     let cancelled = false;
     const contextHue =
       library.playlists.find((playlist) => playlist.id === player.origin?.id)?.hue ??
+      library.artists.find((artist) => artist.id === player.origin?.id)?.hue ??
       (route.view === 'playlist'
         ? library.playlists.find((playlist) => playlist.id === route.id)?.hue
-        : undefined);
+        : route.view === 'artist'
+          ? library.artists.find((artist) => artist.id === route.id)?.hue
+          : undefined);
 
     const fallback = () => {
       const hue = track?.hue ?? contextHue ?? hueFor(library.playlists[0]?.id ?? 'kiarash-play');
@@ -104,7 +122,7 @@ function Shell({ library }: { library: Library }) {
     return () => {
       cancelled = true;
     };
-  }, [track, library.playlists, player.origin, route]);
+  }, [track, library.playlists, library.artists, player.origin, route]);
 
   useEffect(() => {
     document.title = track ? `${track.title} — ${track.artist}` : library.site.title;
@@ -136,6 +154,7 @@ function Shell({ library }: { library: Library }) {
           open={sidebarOpen}
           onNavigate={navigate}
           onShortcuts={() => setShortcuts(true)}
+          onAddMusic={() => setAdding(true)}
         />
         {sidebarOpen && <div className="sidebar-scrim" onClick={() => setSidebarOpen(false)} />}
 
@@ -152,7 +171,7 @@ function Shell({ library }: { library: Library }) {
 
             <button type="button" className="search-field" onClick={() => setSearch(true)}>
               <SearchIcon size={16} />
-              <span className="search-field__label">Search tracks and playlists</span>
+              <span className="search-field__label">Search tracks, artists, playlists</span>
               <span className="search-field__hint desktop-only">⌘K</span>
             </button>
 
@@ -162,11 +181,23 @@ function Shell({ library }: { library: Library }) {
               <span className="chip desktop-only">Sleeping in {player.sleepTimer.label}</span>
             )}
             {player.error && <span className="chip">{player.error}</span>}
+
+            <button type="button" className="btn desktop-only" onClick={() => setAdding(true)}>
+              <UploadIcon size={16} />
+              Add music
+            </button>
           </header>
 
-          <div className="view" key={`${route.view}-${route.view === 'playlist' ? route.id : ''}`}>
+          <div
+            className="view"
+            key={`${route.view}-${'id' in route ? route.id : ''}`}
+          >
             {route.view === 'home' && <HomeView library={library} onNavigate={navigate} />}
             {route.view === 'playlist' && <PlaylistView library={library} id={route.id} />}
+            {route.view === 'artists' && <ArtistsView library={library} onNavigate={navigate} />}
+            {route.view === 'artist' && (
+              <ArtistView library={library} id={route.id} onNavigate={navigate} />
+            )}
             {route.view === 'liked' && <CollectionView library={library} kind="liked" />}
             {route.view === 'recent' && <CollectionView library={library} kind="recent" />}
             {route.view === 'all' && <CollectionView library={library} kind="all" />}
@@ -180,6 +211,14 @@ function Shell({ library }: { library: Library }) {
       {stage && <Stage onClose={() => setStage(false)} />}
       {search && <SearchOverlay library={library} onClose={() => setSearch(false)} onNavigate={navigate} />}
       {shortcuts && <ShortcutsOverlay onClose={() => setShortcuts(false)} />}
+      {adding && (
+        <AddMusic
+          library={library}
+          studio={studio}
+          onClose={() => setAdding(false)}
+          onAdded={onLibraryChanged}
+        />
+      )}
       {toast && <div className="toast glass glass--lit">{toast}</div>}
     </>
   );

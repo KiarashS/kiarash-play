@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Library, QueueOrigin, Track } from '../types';
 import { usePlayer } from '../player/PlayerContext';
-import { searchKey } from '../lib/library';
+import { plural, searchKey } from '../lib/library';
 import { href, type Route } from '../lib/router';
 import { Cover } from './Cover';
 import { CloseIcon, SearchIcon } from './Icons';
@@ -14,7 +14,15 @@ interface Props {
 
 type Result =
   | { kind: 'track'; track: Track; score: number }
-  | { kind: 'playlist'; id: string; title: string; subtitle: string; art?: string; hue?: number; score: number };
+  | {
+      kind: 'playlist' | 'artist';
+      id: string;
+      title: string;
+      subtitle: string;
+      art?: string;
+      hue?: number;
+      score: number;
+    };
 
 const LIMIT = 40;
 
@@ -50,7 +58,8 @@ export function SearchOverlay({ library, onClose, onNavigate }: Props) {
       playlist,
       key: searchKey(`${playlist.title} ${playlist.description}`),
     }));
-    return { tracks, playlists };
+    const artists = library.artists.map((artist) => ({ artist, key: searchKey(artist.name) }));
+    return { tracks, playlists, artists };
   }, [library]);
 
   const results = useMemo<Result[]>(() => {
@@ -65,9 +74,23 @@ export function SearchOverlay({ library, onClose, onNavigate }: Props) {
           kind: 'playlist',
           id: playlist.id,
           title: playlist.title,
-          subtitle: `${playlist.trackIds.length} tracks`,
+          subtitle: plural(playlist.trackIds.length, 'track'),
           art: playlist.coverUrl ?? playlist.cover,
           hue: playlist.hue,
+          score: value + 1.5,
+        });
+      }
+    }
+    for (const { artist, key } of haystacks.artists) {
+      const value = score(key, terms);
+      if (value >= 0) {
+        out.push({
+          kind: 'artist',
+          id: artist.id,
+          title: artist.name,
+          subtitle: plural(artist.trackIds.length, 'track'),
+          art: artist.art,
+          hue: artist.hue,
           score: value + 1.5,
         });
       }
@@ -89,13 +112,21 @@ export function SearchOverlay({ library, onClose, onNavigate }: Props) {
   }, [selected]);
 
   const open = (result: Result) => {
-    if (result.kind === 'playlist') {
-      onNavigate({ view: 'playlist', id: result.id });
-    } else {
-      const origin: QueueOrigin = { kind: 'search', title: `Search: ${query}` };
-      const ids = results.filter((r): r is Extract<Result, { kind: 'track' }> => r.kind === 'track').map((r) => r.track.id);
-      player.playContext(ids, ids.indexOf(result.track.id), origin);
+    if (result.kind !== 'track') {
+      onNavigate(
+        result.kind === 'artist'
+          ? { view: 'artist', id: result.id }
+          : { view: 'playlist', id: result.id },
+      );
+      onClose();
+      return;
     }
+    // Playing a search hit queues every track the search found, in rank order.
+    const origin: QueueOrigin = { kind: 'search', title: `Search: ${query}` };
+    const ids = results
+      .filter((r): r is Extract<Result, { kind: 'track' }> => r.kind === 'track')
+      .map((r) => r.track.id);
+    player.playContext(ids, ids.indexOf(result.track.id), origin);
     onClose();
   };
 
@@ -141,7 +172,7 @@ export function SearchOverlay({ library, onClose, onNavigate }: Props) {
           ) : (
             results.map((result, index) => (
               <button
-                key={result.kind === 'track' ? result.track.id : `p-${result.id}`}
+                key={result.kind === 'track' ? result.track.id : `${result.kind}-${result.id}`}
                 type="button"
                 className="result"
                 data-selected={index === selected}

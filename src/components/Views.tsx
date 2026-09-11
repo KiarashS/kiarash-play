@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { Library, Playlist, QueueOrigin, Track } from '../types';
 import { usePlayer } from '../player/PlayerContext';
 import { useCollections } from '../state/collections';
-import { formatLength } from '../lib/library';
+import { formatLength, plural } from '../lib/library';
 import type { Route } from '../lib/router';
 import { Cover, MosaicCover } from './Cover';
 import { TrackList } from './TrackList';
@@ -58,7 +58,7 @@ function PlaylistCard({ playlist, library, onOpen }: { playlist: Playlist; libra
       >
         <div className="card__title">{playlist.title}</div>
         <div className="card__meta">
-          {playlist.description || `${playlist.trackIds.length} tracks · ${formatLength(playlist.duration)}`}
+          {playlist.description || `${plural(playlist.trackIds.length, 'track')} · ${formatLength(playlist.duration)}`}
         </div>
       </button>
     </div>
@@ -141,7 +141,7 @@ export function PlaylistView({ library, id }: { library: Library; id: string }) 
           <h1>{playlist.title}</h1>
           {playlist.description && <p className="playlist-head__desc">{playlist.description}</p>}
           <div className="playlist-head__meta">
-            {tracks.length} tracks · {formatLength(playlist.duration)}
+            {plural(tracks.length, 'track')} · {formatLength(playlist.duration)}
           </div>
           <div className="playlist-head__actions">
             <PlayButton ids={playlist.trackIds} origin={origin} big />
@@ -227,7 +227,7 @@ export function CollectionView({
           <h1>{title}</h1>
           <p className="playlist-head__desc">{description}</p>
           <div className="playlist-head__meta">
-            {tracks.length} tracks · {formatLength(duration)}
+            {plural(tracks.length, 'track')} · {formatLength(duration)}
           </div>
           {tracks.length > 0 && (
             <div className="playlist-head__actions">

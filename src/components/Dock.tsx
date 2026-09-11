@@ -4,6 +4,7 @@ import { useCollections } from '../state/collections';
 import { useUi } from '../state/ui';
 import { formatTime } from '../lib/library';
 import { Cover } from './Cover';
+import { ArtistLinks } from './ArtistLinks';
 import { Scrub } from './Scrub';
 import { Visualiser } from './Visualiser';
 import { Popover } from './Popover';
@@ -76,7 +77,7 @@ export function Dock({ panel, onPanelChange, onExpand }: Props) {
             </button>
             <div className="dock__text">
               <div className="dock__title">{track.title}</div>
-              <div className="dock__artist">{track.artist}</div>
+              <ArtistLinks track={track} className="dock__artist" />
             </div>
             <button
               type="button"

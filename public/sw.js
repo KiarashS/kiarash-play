@@ -33,7 +33,7 @@ self.addEventListener('activate', (event) => {
 });
 
 function isMedia(url) {
-  return url.pathname.includes('/media/audio/');
+  return url.pathname.includes('/songs/artists/') && /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|weba)$/i.test(url.pathname);
 }
 
 /** Answer a Range request out of a fully cached response. */

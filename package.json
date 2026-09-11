@@ -8,6 +8,7 @@
     "fetch": "node scripts/fetch-media.mjs",
     "fetch:strict": "node scripts/fetch-media.mjs --strict",
     "fetch:clean": "node scripts/fetch-media.mjs --clean",
+    "add": "node scripts/add-track.mjs",
     "dev": "npm run fetch && vite",
     "build": "npm run fetch && tsc --noEmit && vite build",
     "preview": "vite preview",

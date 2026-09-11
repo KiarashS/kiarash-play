@@ -3,6 +3,7 @@ import { usePlayer, useProgress } from '../player/PlayerContext';
 import type { Track } from '../types';
 import { formatTime } from '../lib/library';
 import { Cover } from './Cover';
+import { ArtistLinks } from './ArtistLinks';
 import { CloseIcon, GripIcon } from './Icons';
 
 interface Props {
@@ -71,7 +72,7 @@ function QueueRow({
         <div className="track__title" style={active ? { color: 'var(--accent)' } : undefined}>
           {track.title}
         </div>
-        <div className="track__artist">{track.artist}</div>
+        <ArtistLinks track={track} className="track__artist" />
       </button>
       <span className="track__duration">{formatTime(track.duration)}</span>
       {!active && (

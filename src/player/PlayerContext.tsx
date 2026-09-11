@@ -256,9 +256,11 @@ export function PlayerProvider({ tracks, onPlayed, children }: Props) {
       node.fftSize = 256;
       node.smoothingTimeConstant = 0.78;
       const gain = ctx.createGain();
-      source.connect(node);
-      node.connect(gain);
-      gain.connect(ctx.destination);
+      gain.gain.value = stateRef.current.muted ? 0 : stateRef.current.volume;
+      // Gain first, analyser second: the spectrum then shows what you actually hear.
+      source.connect(gain);
+      gain.connect(node);
+      node.connect(ctx.destination);
       graphRef.current = { ctx, gain };
       setAnalyser(node);
       return graphRef.current;
@@ -321,12 +323,29 @@ export function PlayerProvider({ tracks, onPlayed, children }: Props) {
     }
   }, [state.isPlaying, currentId, ensureGraph]);
 
+  /**
+   * Once createMediaElementSource() has claimed the element, its own `volume` and
+   * `muted` no longer reach the speakers - the audio goes out through the graph
+   * instead. So drive the gain node when the graph exists, and leave the element
+   * at unity so the two never multiply.
+   */
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = state.volume;
-    audio.muted = state.muted;
-  }, [state.volume, state.muted]);
+    const graph = graphRef.current;
+    const level = state.muted ? 0 : state.volume;
+    if (graph) {
+      audio.volume = 1;
+      audio.muted = false;
+      // A short ramp instead of a step, so dragging the slider does not click.
+      const now = graph.ctx.currentTime;
+      graph.gain.gain.cancelScheduledValues(now);
+      graph.gain.gain.setTargetAtTime(level, now, 0.015);
+    } else {
+      audio.volume = state.volume;
+      audio.muted = state.muted;
+    }
+  }, [state.volume, state.muted, analyser]);
 
   // Audio element events: time, buffering, end-of-track, failures.
   useEffect(() => {

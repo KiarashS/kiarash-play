@@ -3,6 +3,7 @@ import { usePlayer, useProgress } from '../player/PlayerContext';
 import { useCollections } from '../state/collections';
 import { formatTime } from '../lib/library';
 import { Cover } from './Cover';
+import { ArtistLinks } from './ArtistLinks';
 import { Scrub } from './Scrub';
 import { LyricsBody } from './SidePanel';
 import {
@@ -92,7 +93,7 @@ export function Stage({ onClose }: { onClose: () => void }) {
 
         <div className="stage__text">
           <div className="stage__title">{track.title}</div>
-          <div className="stage__artist">{track.artist}</div>
+          <ArtistLinks track={track} className="stage__artist" />
           {player.origin && <div className="chip" style={{ marginTop: 12 }}>{player.origin.title}</div>}
         </div>
 

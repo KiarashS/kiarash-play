@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 export type Route =
   | { view: 'home' }
   | { view: 'playlist'; id: string }
+  | { view: 'artist'; id: string }
+  | { view: 'artists' }
   | { view: 'liked' }
   | { view: 'recent' }
   | { view: 'all' };
@@ -11,6 +13,8 @@ function parse(hash: string): Route {
   const path = hash.replace(/^#\/?/, '').split('?')[0];
   const [head, tail] = path.split('/');
   if (head === 'playlist' && tail) return { view: 'playlist', id: decodeURIComponent(tail) };
+  if (head === 'artist' && tail) return { view: 'artist', id: decodeURIComponent(tail) };
+  if (head === 'artists') return { view: 'artists' };
   if (head === 'liked') return { view: 'liked' };
   if (head === 'recent') return { view: 'recent' };
   if (head === 'tracks') return { view: 'all' };
@@ -21,6 +25,10 @@ export function href(route: Route): string {
   switch (route.view) {
     case 'playlist':
       return `#/playlist/${encodeURIComponent(route.id)}`;
+    case 'artist':
+      return `#/artist/${encodeURIComponent(route.id)}`;
+    case 'artists':
+      return '#/artists';
     case 'liked':
       return '#/liked';
     case 'recent':
