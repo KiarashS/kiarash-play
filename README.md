@@ -167,9 +167,15 @@ requests, so the page asks the worker for a complete copy and the worker serves
 ## Deploying
 
 `.github/workflows/deploy.yml` installs ffmpeg, restores the media cache, fetches
-every track with `--strict`, builds with `BASE_PATH` set to `/<repo>/`, and
-publishes to GitHub Pages. Enable Pages for the repository with "GitHub Actions"
-as the source and push to `main`.
+every track with `--strict`, builds, and publishes to GitHub Pages. Enable Pages
+for the repository with "GitHub Actions" as the source and push to `main`.
+
+The base path is decided in `vite.config.ts` rather than in the workflow, because
+getting it wrong fails quietly: the HTML loads and every script and stylesheet
+404s, leaving a blank page and no error. A `public/CNAME` file means a custom
+domain, which serves from the root; without one the build falls back to
+`/<repo>/` from `GITHUB_REPOSITORY`, which is where a GitHub Pages project site
+lives. `BASE_PATH` overrides both for anywhere else.
 
 The whole library ships as static files, so the site is as large as the audio in
 it. GitHub Pages soft-limits a published site to about 1 GB and asks that sites
@@ -179,6 +185,9 @@ object storage instead — nothing in the app assumes Pages.
 To deploy elsewhere, run `npm run build` and upload `dist/`. Set `BASE_PATH` if the
 site is served from a subdirectory; media paths in `library.json` are relative, so
 the same build works at any prefix.
+
+This repository publishes to <https://player.kiarashs.ir>, named in `public/CNAME`.
+Change that file to point the build somewhere else, or delete it for a project site.
 
 ## Layout
 

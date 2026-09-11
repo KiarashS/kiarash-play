@@ -45,14 +45,17 @@ jobs:
 
       - run: npm run typecheck
 
+      # vite.config.ts picks the base path: "/" when public/CNAME names a custom
+      # domain, otherwise /<repo>/ from GITHUB_REPOSITORY. Setting BASE_PATH here
+      # would override that and break whichever case it does not match.
       - name: Build
         run: npx vite build
-        env:
-          # GitHub Pages project sites are served from /<repo>/.
-          BASE_PATH: /${{ github.event.repository.name }}/
 
       - name: Report output size
-        run: du -sh dist && du -sh dist/media
+        run: |
+          du -sh dist
+          du -sh dist/songs || true
+          echo "base path: $(grep -o 'href="[^"]*assets/[^"]*"' dist/index.html | head -1)"
 
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

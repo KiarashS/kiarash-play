@@ -7,7 +7,7 @@ export interface Track {
   id: string;
   /** The URL this track was fetched from at build time. */
   source: string;
-  /** Path relative to the site base, e.g. "media/audio/abc.mp3". */
+  /** Path relative to the site base, e.g. "songs/artists/erik-satie/gymnopedie-no-1.mp3". */
   src: string;
   title: string;
   /** The credit line shown under the title. */
@@ -37,7 +37,7 @@ export interface Playlist {
   accent?: string;
   /** Hue derived from `accent`, or from the playlist id when none was given. */
   hue?: number;
-  /** Cover copied into public/media, borrowed from the first track that has art. */
+  /** Cover borrowed from the first track in the playlist that has art. */
   cover?: string;
   /** Cover left as a remote URL by the manifest. */
   coverUrl?: string;

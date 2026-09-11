@@ -4,7 +4,7 @@
  * explicitly asks for it, because media requests arrive as Range requests that a
  * naive cache-first handler would answer incorrectly.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL = `kp-shell-${VERSION}`;
 const MEDIA = `kp-media-${VERSION}`;
 const MEDIA_LIMIT = 80;
@@ -95,7 +95,25 @@ async function handleShell(request) {
     })
     .catch(() => cached);
   // Stale-while-revalidate: paint from cache, refresh in the background.
+  // Safe here because everything under /assets/ carries a content hash.
   return cached || network;
+}
+
+/**
+ * library.json has a stable name and changes whenever music is added, so serving
+ * it from cache first would hide a deploy until the load after next. Network
+ * first, cache only as the offline fallback.
+ */
+async function handleLibrary(request) {
+  const cache = await caches.open(SHELL);
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
+    if (response.ok) await cache.put(request, response.clone());
+    return response;
+  } catch {
+    const cached = await cache.match(request, { ignoreSearch: true });
+    return cached ?? Response.error();
+  }
 }
 
 self.addEventListener('fetch', (event) => {
@@ -106,6 +124,11 @@ self.addEventListener('fetch', (event) => {
 
   if (isMedia(url)) {
     event.respondWith(handleMedia(request));
+    return;
+  }
+
+  if (url.pathname.endsWith('/library.json')) {
+    event.respondWith(handleLibrary(request));
     return;
   }
 
